@@ -648,8 +648,26 @@ describe('Parser', () => {
           ]
         });
       });
+
+      it("should handle frostlining footnotes", () => {
+        const parser = new Parser()
+
+        let input = '<& Click me! | Your computer is now infected with chlamydia. &>';
+        let ast = parser.toAst(parser.tokenize(input));
+
+        expect(ast).toStrictEqual({
+          type: 'Passage',
+          body: [
+            {
+              type: 'FrostliningFootnote',
+              label: [{ type: 'Source', value: 'Click me!' }],
+              children: [{ type: 'Source', value: 'Your computer is now infected with chlamydia.'}]
+            }
+          ]
+        })
+      });
     })
 
-    describe('invalid input tests', () => {})
+    // TODO: describe('invalid input tests', () => {})
   })
 });
