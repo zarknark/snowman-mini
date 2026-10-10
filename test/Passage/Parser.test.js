@@ -172,7 +172,7 @@ describe('Parser', () => {
         expect(tokens[0]).toMatchObject({type: 'fl-variable', value: '<|'});
         expect(tokens[1]).toMatchObject({type: 'word', value: 'variable-name'});
 
-        tokens = parser.tokenize("<| variable-name \n\n");
+        tokens = parser.tokenize("<|variable-name \n\n");
         expect(tokens.length).toBe(4);
         expect(tokens[0]).toMatchObject({type: 'fl-variable', value: '<|'});
         expect(tokens[1]).toMatchObject({type: 'word', value: 'variable-name'});
@@ -180,7 +180,7 @@ describe('Parser', () => {
         expect(tokens[3]).toMatchObject({type: 'newline', value: '\n'});
       })
 
-      it('should not parse words when newlines follow a varname tag', () => {
+      it('should not parse words when whitespace follows a varname tag', () => {
         const parser = new Parser();
         let tokens = parser.tokenize("<|\n\nvariable-name ");
 
@@ -190,11 +190,10 @@ describe('Parser', () => {
         expect(tokens[2]).toMatchObject({type: 'newline', value: '\n'});
         expect(tokens[3]).toMatchObject({type: 'source', value: 'variable-name'});
 
-        tokens = parser.tokenize("<| \nvariable-name ");
-        expect(tokens.length).toBe(3);
+        tokens = parser.tokenize("<| variable-name ");
+        expect(tokens.length).toBe(2);
         expect(tokens[0]).toMatchObject({type: 'fl-variable', value: '<|'});
-        expect(tokens[1]).toMatchObject({type: 'newline', value: '\n'});
-        expect(tokens[2]).toMatchObject({type: 'source', value: 'variable-name'});
+        expect(tokens[1]).toMatchObject({type: 'source', value: 'variable-name'});
       })
 
       // Conditional tags
@@ -227,19 +226,17 @@ describe('Parser', () => {
         const parser = new Parser();
         let tokens = parser.tokenize("<:em: The clock struck twelve. :>");
 
-        expect(tokens.length).toBe(4);
+        expect(tokens.length).toBe(3);
         expect(tokens[0]).toMatchObject({type: 'fl-html-start', value: 'em'})
-        expect(tokens[1]).toMatchObject({type: 'word', value: 'The'})
-        expect(tokens[2]).toMatchObject({type: 'source', value: 'clock struck twelve.'})
-        expect(tokens[3]).toMatchObject({type: 'fl-html-end', value: ':>'})
+        expect(tokens[1]).toMatchObject({type: 'source', value: 'The clock struck twelve.'})
+        expect(tokens[2]).toMatchObject({type: 'fl-html-end', value: ':>'})
 
         tokens = parser.tokenize("<:p.fl-hidden: The clock ticked quietly. :>");
 
-        expect(tokens.length).toBe(4);
+        expect(tokens.length).toBe(3);
         expect(tokens[0]).toMatchObject({type: 'fl-html-start', value: 'p.fl-hidden'})
-        expect(tokens[1]).toMatchObject({type: 'word', value: 'The'})
-        expect(tokens[2]).toMatchObject({type: 'source', value: 'clock ticked quietly.'})
-        expect(tokens[3]).toMatchObject({type: 'fl-html-end', value: ':>'})
+        expect(tokens[1]).toMatchObject({type: 'source', value: 'The clock ticked quietly.'})
+        expect(tokens[2]).toMatchObject({type: 'fl-html-end', value: ':>'})
       })
 
       // Click-for-footnote: '<& [ source ] | footnote &>'
